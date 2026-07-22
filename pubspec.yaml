@@ -1,0 +1,81 @@
+name: mangoshop_app
+description: "망고샵 — 수입 과일 도매·소매 오픈마켓 모바일 앱"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # 상태관리 / 라우팅
+  flutter_riverpod: ^2.6.1
+  go_router: ^14.6.2
+
+  # 네트워크
+  dio: ^5.7.0
+
+  # 저장소
+  flutter_secure_storage: ^9.2.4
+  shared_preferences: ^2.3.3
+
+  # UI / 이미지
+  cached_network_image: ^3.4.1
+  shimmer: ^3.0.0
+  carousel_slider: ^5.0.0
+  smooth_page_indicator: ^1.2.0
+
+  # 결제 웹뷰
+  webview_flutter: ^4.10.0
+
+  # 실시간 상담 (Pusher)
+  pusher_channels_flutter: ^2.4.0
+
+  # 푸시 알림 (FCM)
+  firebase_core: ^3.8.0
+  firebase_messaging: ^15.1.5
+  flutter_local_notifications: ^18.0.1
+
+  # 유틸
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.3
+  flutter_native_splash: ^2.4.3
+
+flutter:
+  uses-material-design: true
+  assets:
+    # 런타임에 쓰는 브랜드 이미지만 번들에 포함
+    # (app_icon*.png / icon_adaptive_foreground.png 은 빌드타임 생성용이라 제외)
+    - assets/brand/logo_horizontal.png
+    - assets/brand/logo_stacked.png
+
+# 런처 아이콘 생성:  dart run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: "assets/brand/app_icon.png"
+  android: true
+  ios: true
+  # iOS 아이콘은 알파 채널 불가 (App Store 리젝 사유)
+  remove_alpha_ios: true
+  min_sdk_android: 23
+  # Android 적응형 아이콘 — 브랜드 오렌지 배경 + 마스크 안전영역에 맞춘 망고
+  adaptive_icon_background: "#F85800"
+  adaptive_icon_foreground: "assets/brand/icon_adaptive_foreground.png"
+
+# 네이티브 스플래시 생성:  dart run flutter_native_splash:create
+flutter_native_splash:
+  color: "#F85800"
+  background_image: "assets/brand/splash_screen.png"
+  android: true
+  ios: true
+  android_12:
+    # Android 12+ 는 중앙 원형 아이콘만 노출되므로 망고 심볼만 사용
+    image: "assets/brand/icon_adaptive_foreground.png"
+    color: "#F85800"
