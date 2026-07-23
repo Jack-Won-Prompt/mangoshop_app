@@ -53,8 +53,24 @@ class _MangoShopAppState extends ConsumerState<MangoShopApp> {
     });
   }
 
+  /// 앱 시작 시 관리자 모드 자동 진입을 1회만 수행하기 위한 플래그.
+  /// (이후 관리자가 '고객 화면'으로 전환한 상태를 되돌리지 않는다)
+  bool _adminEntryHandled = false;
+
   @override
   Widget build(BuildContext context) {
+    // 저장된 토큰으로 부팅한 관리자 → 관리자 모드로 진입
+    ref.listen(authProvider, (prev, next) {
+      if (_adminEntryHandled) return;
+      if (next.loading) return;
+      _adminEntryHandled = true;
+      // 부팅 직후(초기 위치가 홈)일 때만 전환한다
+      if ((next.user?.isAdmin ?? false) &&
+          router.routerDelegate.currentConfiguration.uri.path == '/') {
+        router.go('/admin');
+      }
+    });
+
     // 로그인되면 FCM 토큰을 서버에 등록
     ref.listen(authProvider, (prev, next) async {
       final was = prev?.isLoggedIn ?? false;

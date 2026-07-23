@@ -39,7 +39,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             _pwCtrl.text,
           );
       if (!mounted) return;
-      if (context.canPop()) {
+      // 관리자 계정은 쇼핑 화면 대신 관리자 모드로 진입한다.
+      // (관리자 셸의 '고객 화면' 버튼으로 언제든 전환 가능)
+      if (ref.read(authProvider).user?.isAdmin ?? false) {
+        context.go('/admin');
+      } else if (context.canPop()) {
         context.pop();
       } else {
         context.go('/');

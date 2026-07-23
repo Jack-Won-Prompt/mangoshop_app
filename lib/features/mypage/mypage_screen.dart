@@ -427,8 +427,17 @@ class _MypageScreenState extends ConsumerState<MypageScreen> {
   }
 
   Widget _menuGroups() {
+    final isAdmin = ref.read(authProvider).user?.isAdmin ?? false;
     return Column(
       children: [
+        // 관리자 계정이 고객 화면을 보고 있을 때 다시 관리자 모드로 돌아가는 경로
+        if (isAdmin) ...[
+          _menuGroup('관리', [
+            // isTab: 관리자 셸은 별도 셸이라 push 가 아닌 go 로 전환해야 한다
+            _MenuItem(Icons.admin_panel_settings_outlined, '관리자 모드', '/admin', isTab: true),
+          ]),
+          const SizedBox(height: 12),
+        ],
         _menuGroup('주문/혜택', [
           _MenuItem(Icons.receipt_long_outlined, '주문내역', '/orders'),
           _MenuItem(Icons.favorite_border, '관심상품', '/wishlist', isTab: true),
