@@ -49,3 +49,9 @@ app.*.map.json
 
 # 브랜드 자산 원본 압축본 — mangoshop_mobile_assets/ 폴더와 중복
 mangoshop_mobile_assets.zip
+
+# 릴리즈 서명 (절대 커밋 금지 — 유출 시 앱 위·변조 가능)
+android/key.properties
+android/upload-keystore.jks
+*.jks
+*.keystore
