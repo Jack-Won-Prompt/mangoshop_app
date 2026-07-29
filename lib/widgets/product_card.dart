@@ -32,13 +32,14 @@ class ProductCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Stack(
-              children: [
-                AspectRatio(
-                  aspectRatio: 1,
-                  child: NetImage(p.thumbnail, fit: BoxFit.cover, radius: 0,
-                      width: double.infinity),
-                ),
+            // 이미지는 남는 세로 공간을 흡수한다(Expanded). 아래 텍스트는 자연 높이를
+            // 쓰므로, 카드 내용이 늘어도 고정 높이 셀을 넘겨 오버플로가 나지 않는다.
+            Expanded(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  NetImage(p.thumbnail,
+                      fit: BoxFit.cover, radius: 0, width: double.infinity, height: double.infinity),
                 if (p.isBest || p.isNew || p.hasSpecial)
                   Positioned(
                     top: 8, left: 8,
@@ -76,7 +77,8 @@ class ProductCard extends ConsumerWidget {
                       ),
                     ),
                   ),
-              ],
+                ],
+              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
@@ -130,10 +132,16 @@ class ProductCard extends ConsumerWidget {
                         Text(comma(p.listPrice),
                             style: const TextStyle(color: AppColors.sub, fontSize: 11, decoration: TextDecoration.lineThrough)),
                       ]),
-                    Row(children: [
+                    Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
                       Text(won(p.price), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
                       if (p.unit != null && p.unit!.isNotEmpty)
-                        Text(' / ${p.unit}', style: const TextStyle(fontSize: 11, color: AppColors.sub)),
+                        // 좁은 카드에서 가격+단위가 가로로 넘치지 않도록 단위를 축약
+                        Flexible(
+                          child: Text(' / ${p.unit}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 11, color: AppColors.sub)),
+                        ),
                     ]),
                     // 최소주문수량(MOQ) — B2B 주문 단위 안내
                     if (p.moq > 1)
