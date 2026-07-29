@@ -55,3 +55,6 @@ android/key.properties
 android/upload-keystore.jks
 *.jks
 *.keystore
+
+# 스토어 스크린샷 원본(개인 기기 캡처) — 보정본(screenshot_*.png)만 커밋
+store_assets/KakaoTalk_*.jpg
