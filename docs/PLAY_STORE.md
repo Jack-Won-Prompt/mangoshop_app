@@ -5,7 +5,7 @@
 | 항목 | 값 |
 |---|---|
 | 패키지명(applicationId) | `com.mangoshop.mangoshop_app` (영구 고정) |
-| 버전 | 1.0.0 (versionCode 1) |
+| 버전 | 1.0.0 (versionCode 2) |
 | 업로드 AAB | `build/app/outputs/bundle/release/app-release.aab` |
 | 서명 키스토어 | `android/upload-keystore.jks` (**git 미추적**) |
 | 키 비밀번호 | `android/key.properties` 안에 저장 (**git 미추적**) |

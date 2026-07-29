@@ -1,7 +1,7 @@
 name: mangoshop_app
 description: "망고샵 — 수입 과일 도매·소매 오픈마켓 모바일 앱"
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ^3.12.0
