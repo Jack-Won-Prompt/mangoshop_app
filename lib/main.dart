@@ -8,6 +8,7 @@ import 'core/push_service.dart';
 import 'core/theme.dart';
 import 'providers/auth_provider.dart';
 import 'router.dart';
+import 'widgets/update_gate.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -95,7 +96,8 @@ class _MangoShopAppState extends ConsumerState<MangoShopApp> {
       routerConfig: router,
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)),
-        child: child!,
+        // 모든 화면 위에 업데이트 알림(선택 배너 / 필수 차단)을 씌운다
+        child: UpdateGate(child: child!),
       ),
     );
   }
