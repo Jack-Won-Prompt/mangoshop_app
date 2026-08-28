@@ -55,28 +55,25 @@ class HomeScreen extends ConsumerWidget {
                 const SectionHeader('지금 인기 있는 과일', subtitle: '망고샵 인기 수입 과일'),
                 _HorizontalProducts(products: diverse),
               ],
-              // 이달의 베스트 과일
+              // ② 이달의 베스트 과일 (웹: bestProducts)
               if (data.best.isNotEmpty) ...[
                 SectionHeader('이달의 베스트 과일',
                     subtitle: '망고샵에서 가장 많이 찾는 인기 수입 과일',
                     onMore: () => context.push('/products')),
                 _HorizontalProducts(products: data.best),
               ],
-              // 사업자 전용 도매 특가
-              if (data.deals.isNotEmpty) ...[
+              // ③ 사업자 전용 도매 특가 (웹: featuredProducts — deals 아님)
+              if (data.featured.isNotEmpty) ...[
                 SectionHeader('사업자 전용 도매 특가',
                     subtitle: '도매회원 승인 후 도매 전용가와 수량구간 대량할인',
                     onMore: () => context.push('/products')),
-                _HorizontalProducts(products: data.deals),
+                _HorizontalProducts(products: data.featured),
               ],
-              // 카테고리별 인기상품 (카테고리 탭)
+              // ── 이하 앱 전용 보강 섹션 (웹 메인에는 없음) ──
+              // 카테고리별 인기상품
               if (data.categoryTabs.isNotEmpty) ...[
                 const SectionHeader('카테고리별 인기상품'),
                 _CategoryBestTabs(tabs: data.categoryTabs),
-              ],
-              if (data.featured.isNotEmpty) ...[
-                const SectionHeader('추천 상품'),
-                _HorizontalProducts(products: data.featured),
               ],
               // 최근 본 상품 (기기 로컬)
               ...(() {
