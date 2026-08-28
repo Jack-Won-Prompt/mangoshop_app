@@ -62,14 +62,19 @@ class HomeScreen extends ConsumerWidget {
                     onMore: () => context.push('/products')),
                 _HorizontalProducts(products: data.best),
               ],
-              // ③ 사업자 전용 도매 특가 (웹: featuredProducts — deals 아님)
-              if (data.featured.isNotEmpty) ...[
+              // ③ 사업자 전용 도매 특가 (웹과 동일: 실제 할인상품 deals)
+              if (data.deals.isNotEmpty) ...[
                 SectionHeader('사업자 전용 도매 특가',
                     subtitle: '도매회원 승인 후 도매 전용가와 수량구간 대량할인',
                     onMore: () => context.push('/products')),
-                _HorizontalProducts(products: data.featured),
+                _HorizontalProducts(products: data.deals),
               ],
               // ── 이하 앱 전용 보강 섹션 (웹 메인에는 없음) ──
+              // 추천 상품
+              if (data.featured.isNotEmpty) ...[
+                const SectionHeader('추천 상품'),
+                _HorizontalProducts(products: data.featured),
+              ],
               // 카테고리별 인기상품
               if (data.categoryTabs.isNotEmpty) ...[
                 const SectionHeader('카테고리별 인기상품'),
