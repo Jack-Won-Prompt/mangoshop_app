@@ -43,33 +43,40 @@ class HomeScreen extends ConsumerWidget {
             children: [
               if (data.mainBanners.isNotEmpty)
                 _BannerCarousel(banners: data.mainBanners, heroPics: heroPics),
+              // 신뢰 배지 (웹 메인의 trust bar) — 콜드체인·수입사·대량할인·세금계산서
+              const _TrustBar(),
               const _QuickCategories(),
-              const _InfoLinks(),
-              // 다양한 인기상품 (여러 제조사) — 메인 상단 노출
-              if (diverse.isNotEmpty) ...[
-                const SectionHeader('다양한 인기상품'),
+              // 새로 들어온 과일 (웹 메인 최상단 상품 섹션)
+              if (data.newArrivals.isNotEmpty) ...[
+                const SectionHeader('새로 들어온 과일', subtitle: '이번 주 새롭게 입고된 신상품'),
+                _HorizontalProducts(products: data.newArrivals),
+              ] else if (diverse.isNotEmpty) ...[
+                // 신상품이 없으면 인기상품 풀로 대체
+                const SectionHeader('지금 인기 있는 과일', subtitle: '망고샵 인기 수입 과일'),
                 _HorizontalProducts(products: diverse),
+              ],
+              // 이달의 베스트 과일
+              if (data.best.isNotEmpty) ...[
+                SectionHeader('이달의 베스트 과일',
+                    subtitle: '망고샵에서 가장 많이 찾는 인기 수입 과일',
+                    onMore: () => context.push('/products')),
+                _HorizontalProducts(products: data.best),
+              ],
+              // 사업자 전용 도매 특가
+              if (data.deals.isNotEmpty) ...[
+                SectionHeader('사업자 전용 도매 특가',
+                    subtitle: '도매회원 승인 후 도매 전용가와 수량구간 대량할인',
+                    onMore: () => context.push('/products')),
+                _HorizontalProducts(products: data.deals),
               ],
               // 카테고리별 인기상품 (카테고리 탭)
               if (data.categoryTabs.isNotEmpty) ...[
                 const SectionHeader('카테고리별 인기상품'),
                 _CategoryBestTabs(tabs: data.categoryTabs),
               ],
-              if (data.deals.isNotEmpty) ...[
-                const SectionHeader('오늘의 특가', subtitle: '지금 이 가격!'),
-                _HorizontalProducts(products: data.deals),
-              ],
-              if (data.best.isNotEmpty) ...[
-                SectionHeader('BEST 상품', onMore: () => context.push('/products')),
-                _HorizontalProducts(products: data.best),
-              ],
               if (data.featured.isNotEmpty) ...[
                 const SectionHeader('추천 상품'),
                 _HorizontalProducts(products: data.featured),
-              ],
-              if (data.newArrivals.isNotEmpty) ...[
-                const SectionHeader('신상품'),
-                _HorizontalProducts(products: data.newArrivals),
               ],
               // 최근 본 상품 (기기 로컬)
               ...(() {
@@ -80,6 +87,8 @@ class HomeScreen extends ConsumerWidget {
                   _HorizontalProducts(products: recent),
                 ];
               })(),
+              // 피처 밴드 (웹 메인의 적립·수입사 직거래 배너)
+              const _FeatureBand(),
               if (data.notices.isNotEmpty) ...[
                 SectionHeader('공지사항', onMore: () => context.push('/community/notices')),
                 _NoticeList(notices: data.notices),
@@ -292,40 +301,130 @@ class _CategoryBestTabsState extends State<_CategoryBestTabs> {
 }
 
 // ===== 이용안내 링크 (배너 하단 탭바) =====
-class _InfoLinks extends StatelessWidget {
-  const _InfoLinks();
+/// 신뢰 배지 밴드 — 웹 메인의 trust bar 를 그대로 반영.
+/// 콜드체인 당일발송 · 검증된 수입사 · 수량구간 대량할인 · 세금계산서.
+class _TrustBar extends StatelessWidget {
+  const _TrustBar();
 
   @override
   Widget build(BuildContext context) {
-    final items = [
-      (Icons.card_giftcard_outlined, '신규회원 혜택', '/guide/event'),
-      (Icons.local_shipping_outlined, '당일출고', '/guide/delivery'),
-      (Icons.credit_card_outlined, '간편결제', '/guide/payment'),
+    final items = <(IconData, String, String, Color)>[
+      (Icons.local_shipping_outlined, '당일 발송·콜드체인', '결제 후 당일 출고, 1~2일 도착', AppColors.cool),
+      (Icons.storefront_outlined, '검증된 수입사 상품', '엄선한 수입 과일', AppColors.brand),
+      (Icons.local_offer_outlined, '수량구간 대량할인', '도매회원 구간별 도매가', AppColors.wholesale),
+      (Icons.receipt_long_outlined, '세금계산서', '사업자 발행 지원', AppColors.leaf),
     ];
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+      decoration: BoxDecoration(
+        color: AppColors.bg,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.line),
+      ),
       child: Row(
         children: items.map((it) {
           return Expanded(
-            child: GestureDetector(
-              onTap: () => context.push(it.$3),
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: AppColors.bg,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.line),
-                ),
-                child: Column(children: [
-                  Icon(it.$1, color: AppColors.navy, size: 22),
-                  const SizedBox(height: 6),
-                  Text(it.$2, style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600)),
-                ]),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+              child: Column(
+                children: [
+                  Icon(it.$1, color: it.$4, size: 24),
+                  const SizedBox(height: 7),
+                  Text(it.$2,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      style: const TextStyle(fontSize: 11, height: 1.2, fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 3),
+                  Text(it.$3,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      style: const TextStyle(fontSize: 9.5, height: 1.15, color: AppColors.sub)),
+                ],
               ),
             ),
           );
         }).toList(),
+      ),
+    );
+  }
+}
+
+/// 피처 밴드 — 웹 메인의 적립·수입사 직거래 배너 2종.
+class _FeatureBand extends StatelessWidget {
+  const _FeatureBand();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 4),
+      child: Column(
+        children: [
+          _card(
+            context,
+            bg: AppColors.accentSoft,
+            fg: AppColors.brandDark,
+            icon: Icons.savings_outlined,
+            title: '사고, 후기 쓰면 적립금이 쌓여요',
+            desc: '구매부터 후기까지, 이용할수록 커지는 혜택',
+            cta: '후기 쓰고 적립받기',
+            route: '/community/reviews',
+          ),
+          const SizedBox(height: 10),
+          _card(
+            context,
+            bg: AppColors.leafSoft,
+            fg: AppColors.leaf,
+            icon: Icons.handshake_outlined,
+            title: '검증된 수입사와 직거래합니다',
+            desc: '산지 그대로 프리미엄 열대과일 · 수입사 입점 상시 모집',
+            cta: '입점 문의하기',
+            route: '/community/inquiry',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _card(BuildContext context,
+      {required Color bg,
+      required Color fg,
+      required IconData icon,
+      required String title,
+      required String desc,
+      required String cta,
+      required String route}) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: () => context.push(route),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(16)),
+        child: Row(
+          children: [
+            Container(
+              width: 46, height: 46,
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
+              child: Icon(icon, color: fg, size: 24),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 3),
+                  Text(desc, style: const TextStyle(fontSize: 12, color: AppColors.sub, height: 1.3)),
+                  const SizedBox(height: 8),
+                  Row(children: [
+                    Text(cta, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: fg)),
+                    Icon(Icons.arrow_forward, size: 14, color: fg),
+                  ]),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
