@@ -5,7 +5,7 @@
 | 항목 | 값 |
 |---|---|
 | 패키지명(applicationId) | `com.mangoshop.mangoshop_app` (영구 고정) |
-| 버전 | 1.0.0 (versionCode 2) |
+| 버전 | 1.0.0 (versionCode 3) |
 | 업로드 AAB | `build/app/outputs/bundle/release/app-release.aab` |
 | 서명 키스토어 | `android/upload-keystore.jks` (**git 미추적**) |
 | 키 비밀번호 | `android/key.properties` 안에 저장 (**git 미추적**) |
@@ -24,7 +24,7 @@
 flutter build appbundle --release
 ```
 `android/key.properties` 가 있는 환경에서 빌드해야 업로드 키로 서명됩니다.
-버전을 올릴 때는 `pubspec.yaml` 의 `version: 1.0.0+1` 에서 `+1`(versionCode)을 반드시 증가시키세요.
+버전을 올릴 때는 `pubspec.yaml` 의 `version: 1.0.0+2` 에서 `+1`(versionCode)을 반드시 증가시키세요.
 (Play 는 동일 versionCode 재업로드를 거부합니다.)
 
 ## 2. Play Console 업로드 절차
