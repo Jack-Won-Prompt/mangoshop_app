@@ -153,6 +153,10 @@ class PushService {
         final id = data['order_id'];
         if (id != null) router.push('/orders/$id');
         break;
+      case 'inquiry':
+        // 새 고객문의(관리자 대상) → 문의·후기 관리 화면
+        router.go('/admin/inquiries');
+        break;
       case 'chat':
         router.push('/chat');
         break;
