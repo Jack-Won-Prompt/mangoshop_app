@@ -157,6 +157,11 @@ class PushService {
         // 새 고객문의(관리자 대상) → 문의·후기 관리 화면
         router.go('/admin/inquiries');
         break;
+      case 'member_join':
+        // 새 회원가입(관리자 대상) → 회원 상세(승인/반려)
+        final uid = data['user_id'];
+        router.push(uid != null ? '/admin/users/$uid' : '/admin/users');
+        break;
       case 'chat':
         router.push('/chat');
         break;

@@ -115,7 +115,9 @@ class _InquiryTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
+    return GestureDetector(
+      onTap: () => _openDetail(context, ref),
+      child: Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -126,6 +128,11 @@ class _InquiryTile extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const Align(
+            alignment: Alignment.centerRight,
+            child: Text('눌러서 상세보기 ›',
+                style: TextStyle(fontSize: 11, color: AppColors.sub, fontWeight: FontWeight.w700)),
+          ),
           Row(children: [
             _chip(inquiry.typeLabel, AppColors.cool),
             const SizedBox(width: 6),
@@ -190,6 +197,7 @@ class _InquiryTile extends ConsumerWidget {
           ),
         ],
       ),
+      ),
     );
   }
 
@@ -202,6 +210,110 @@ class _InquiryTile extends ConsumerWidget {
         child: Text(text,
             style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: c)),
       );
+
+  /// 문의 상세: 전체 본문·연락처·답변을 스크롤로 확인 + 답변 액션.
+  Future<void> _openDetail(BuildContext context, WidgetRef ref) async {
+    final contact = [inquiry.name, inquiry.phone, inquiry.email]
+        .whereType<String>()
+        .where((s) => s.isNotEmpty)
+        .join(' · ');
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (sheetCtx) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.7,
+        minChildSize: 0.4,
+        maxChildSize: 0.95,
+        builder: (_, scroll) => Padding(
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 40, height: 4,
+                  decoration: BoxDecoration(
+                      color: AppColors.line, borderRadius: BorderRadius.circular(2)),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Expanded(
+                child: ListView(
+                  controller: scroll,
+                  children: [
+                    Row(children: [
+                      _chip(inquiry.typeLabel, AppColors.cool),
+                      const SizedBox(width: 6),
+                      _chip(inquiry.isAnswered ? '답변완료' : '미답변',
+                          inquiry.isAnswered ? AppColors.leaf : AppColors.warn),
+                      if (inquiry.isSecret) ...[
+                        const SizedBox(width: 6),
+                        const Icon(Icons.lock_outline, size: 14, color: AppColors.sub),
+                      ],
+                      const Spacer(),
+                      Text(inquiry.createdAt ?? '',
+                          style: const TextStyle(fontSize: 12, color: AppColors.sub)),
+                    ]),
+                    const SizedBox(height: 12),
+                    Text(inquiry.subject ?? '(제목 없음)',
+                        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900, height: 1.4)),
+                    if (contact.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Text(contact, style: const TextStyle(fontSize: 12.5, color: AppColors.sub)),
+                    ],
+                    const Divider(height: 26),
+                    SelectableText(
+                      (inquiry.body ?? '').isEmpty ? '(내용 없음)' : inquiry.body!,
+                      style: const TextStyle(fontSize: 14.5, height: 1.6),
+                    ),
+                    if (inquiry.isAnswered && (inquiry.answer ?? '').isNotEmpty) ...[
+                      const SizedBox(height: 18),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: AppColors.leafSoft,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('답변 · ${inquiry.answeredAt ?? ''}',
+                                style: const TextStyle(
+                                    fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.leaf)),
+                            const SizedBox(height: 6),
+                            SelectableText(inquiry.answer!,
+                                style: const TextStyle(fontSize: 14, height: 1.5)),
+                          ],
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
+              SafeArea(
+                top: false,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(sheetCtx);
+                    _answer(context, ref);
+                  },
+                  style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+                  child: Text(inquiry.isAnswered ? '답변 수정' : '답변하기'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   Future<void> _answer(BuildContext context, WidgetRef ref) async {
     final ctl = TextEditingController(text: inquiry.answer ?? '');
