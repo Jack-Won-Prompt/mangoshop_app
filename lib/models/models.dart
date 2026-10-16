@@ -172,6 +172,7 @@ class Category {
   final String? slug;
   final String? tagline;
   final String? icon;
+  final String? image;
   final int? parentId;
   final List<Category> children;
   Category.fromJson(Map j)
@@ -180,6 +181,7 @@ class Category {
         slug = _str(j['slug']),
         tagline = _str(j['tagline']),
         icon = _str(j['icon']),
+        image = _str(j['image']),
         parentId = j['parent_id'] == null ? null : _int(j['parent_id']),
         children = ((j['children'] as List?) ?? []).map((e) => Category.fromJson(e)).toList();
 }

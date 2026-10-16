@@ -639,7 +639,7 @@ class _QuickCategories extends ConsumerWidget {
                           border: Border.all(color: AppColors.line),
                         ),
                         alignment: Alignment.center,
-                        child: CategoryIcon(c.icon, size: 28),
+                        child: CategoryIcon(c.icon, image: c.image, size: 28),
                       ),
                       const SizedBox(height: 6),
                       SizedBox(

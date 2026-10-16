@@ -123,7 +123,7 @@ class _CategoryTile extends StatelessWidget {
       height: 40,
       decoration: BoxDecoration(color: AppColors.chip, borderRadius: BorderRadius.circular(12)),
       alignment: Alignment.center,
-      child: CategoryIcon(category.icon, size: 20),
+      child: CategoryIcon(category.icon, image: category.image, size: 20),
     );
   }
 }

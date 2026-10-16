@@ -133,23 +133,47 @@ class ErrorRetry extends StatelessWidget {
   }
 }
 
-/// 망고샵 서버의 `category.icon` 은 이모지 문자열(🥭 🥑 🍍 …)이다.
-/// 하위 카테고리는 icon 이 null 이므로 기본 아이콘으로 대체한다.
+/// 카테고리 아이콘 — 올린 그림이 있으면 그림, 없으면 `icon` 의 이모지(🥭 🥑 🍍 …).
+/// 하위 카테고리는 둘 다 비어 있으므로 기본 아이콘으로 대체한다.
+///
+/// `icon` 에 'cat-citrus' 같은 영문 키가 들어오는 경우가 있다. 전에는 그대로 찍어서
+/// 화면에 "cat-citru" 라는 글자가 그냥 보였다. 영문 키는 그림이 아니므로 찍지 않는다.
 class CategoryIcon extends StatelessWidget {
   final String? icon;
+  final String? image;
   final double size;
   final Color? fallbackColor;
-  const CategoryIcon(this.icon, {super.key, this.size = 24, this.fallbackColor});
+  const CategoryIcon(this.icon, {super.key, this.image, this.size = 24, this.fallbackColor});
+
+  /// 영문·숫자·하이픈·밑줄로만 된 값 = 이모지가 아니라 내부 키
+  static final RegExp _plainKey = RegExp(r'^[A-Za-z0-9_-]+$');
 
   @override
   Widget build(BuildContext context) {
+    final url = image?.trim();
+    if (url != null && url.isNotEmpty) {
+      return ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: url,
+          width: size,
+          height: size,
+          fit: BoxFit.cover,
+          placeholder: (_, _) => SizedBox(width: size, height: size),
+          errorWidget: (_, _, _) => _fallback(),
+        ),
+      );
+    }
+
     final e = icon?.trim();
-    if (e != null && e.isNotEmpty) {
+    if (e != null && e.isNotEmpty && !_plainKey.hasMatch(e)) {
       // 이모지는 폰트로 렌더 — 아이콘보다 살짝 작게 잡아야 시각 크기가 맞는다
       return Text(e, style: TextStyle(fontSize: size * 0.86, height: 1.1));
     }
-    return Icon(Icons.eco_outlined, size: size, color: fallbackColor ?? AppColors.leaf);
+    return _fallback();
   }
+
+  Widget _fallback() =>
+      Icon(Icons.eco_outlined, size: size, color: fallbackColor ?? AppColors.leaf);
 }
 
 void toast(BuildContext context, String message) {
